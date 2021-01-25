@@ -1,13 +1,24 @@
-FROM ubuntu:latest
-MAINTAINER Samuel Brezani "samuel.brezani@gmail.com"
+FROM ubuntu:16.04
 
-RUN apt-get update && apt-get install -y \
-        curl
-        
-RUN curl -sL https://deb.nodesource.com/setup_7.x | bash -
+RUN rm /bin/sh && ln -s /bin/bash /bin/sh
+
+RUN apt-get update --fix-missing
+RUN apt-get install -y curl
+RUN apt-get install -y build-essential libssl-dev
+
+ENV NVM_DIR /usr/local/nvm
+ENV NODE_VERSION 7.7.3
+
+RUN curl https://raw.githubusercontent.com/creationix/nvm/v0.30.1/install.sh | bash \
+    && source $NVM_DIR/nvm.sh \
+    && nvm install $NODE_VERSION \
+    && nvm alias default $NODE_VERSION \
+    && nvm use default
+
+ENV NODE_PATH $NVM_DIR/v$NODE_VERSION/lib/node_modules
+ENV PATH      $NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH
 
 RUN apt-get install -y \
-    nodejs \
     openalpr \
     openalpr-daemon \
     openalpr-utils \
